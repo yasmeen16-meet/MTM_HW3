@@ -3,6 +3,7 @@
 //
 
 #include "eurovision.h"
+
 Participant::Participant(string state,string song,int length,string singer) {
     this->state_name = state;
     this->song_name = song;
@@ -59,10 +60,91 @@ void Participant::updateRegistered(bool new_status) {
     is_registerd = new_status;
 }
 
-MainControl::MainControl(int max_time, int max_participants, int max_votes) {
-    this->max_time=max_time;
-    this->max_participants=max_participants;
-    this->max_votes=max_votes;
-    control_participants = new Participant[max_participants];
-    phase= Registration;
+MainControl::MainControl(int max_time, int max_participants, int max_votes):
+        control_participants(new Participant*[max_participants]) {
+
+    this->max_time = max_time;
+    this->max_participants = max_participants;
+    this->max_votes = max_votes;
+    phase = Registration;
+
+    for (int i=0; i<max_participants; i++){
+        this->control_participants[i] = NULL;
+    }
+}
+
+MainControl::~MainControl() {
+    for (int i = 0; i < this->max_participants; i++) {
+        delete this->control_participants[i];
+    }
+    delete[] this->control_participants;
+}
+
+string getPhase(int phase){
+    if (phase == 0){
+        return "Registeration";
+    }
+    if (phase == 1){
+        return "Contest";
+    }
+    return "Voting";
+}
+//*******************************
+
+std::ostream& operator<<(std::ostream& os, const MainControl& main_control) {
+    os << "{"  << endl << getPhase(main_control.phase)<<endl;
+    for (int i=0; i< main_control.max_participants; i++)
+    {
+        if(main_control.control_participants[i]!=NULL)
+        {
+            os << *(main_control.control_participants[i])<<endl;
+        }
+    }
+    os << "}";
+    return os;
+}
+
+int MainControl::getSize(const MainControl& main_control) {
+    int size = 0;
+    for (int i = 0; i < main_control.max_participants; i++) {
+        if (main_control.control_participants[i] != NULL) {
+            size++;
+        }
+    }
+    return size;
+}
+
+bool MainControl::stateExists(const MainControl& main_control, string state) {
+    for (int i = 0; i < main_control.max_participants; i++) {
+        if (main_control.control_participants[i] != NULL) {
+            if((main_control.control_participants[i])->state()==state){
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+MainControl& MainControl::operator+=(Participant& participant) {
+    if (this->phase == Registration) {
+
+        if (getSize(*this) != this->max_participants) {
+            if (participant.isRegistered() == 0) {
+                if (participant.state() != "" && participant.song() != "" && participant.singer() != "" &&
+                    participant.timeLength() <= this->max_time) {
+                    if (!(this->stateExists(*this, participant.state()))) {
+                        for (int i = 0; i < this->max_participants; i++) {
+                            if (this->control_participants[i] == NULL) {
+                                this->control_participants[i] = &participant;
+                                // this->control_participants[i] = &participant;
+                                //(participant).updateRegistered(true);
+                                return *this;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return *this;
 }
