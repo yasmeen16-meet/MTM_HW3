@@ -89,15 +89,17 @@ struct Vote
 // -----------------------------------------------------------
 
 
-class MainControl
-{
-    int  max_time , max_participants , max_votes , phase;
-    Participant* control_participants;
+class MainControl {
+    int max_time, max_participants, max_votes, phase;
+    Participant **control_participants;
     //votes
 // relevant private members can be defined here, if necessary.
 
+private:
+    int getSize(const MainControl&);
+    bool stateExists(const MainControl& , string state);
+
 public :
-MainControl (int max_time =180,int max_participants = 26,int max_votes =5);
 
 // need to define here possibly c'tr and d'tr and ONLY methods that
 // are mentioned and demonstrated in the test example that has been published.
@@ -105,9 +107,13 @@ MainControl (int max_time =180,int max_participants = 26,int max_votes =5);
 
 // Also it's allowed here to define friend.
 
+    MainControl(int max_time = 180, int max_participants = 26, int max_votes = 5);
+    ~MainControl();
+    MainControl& operator+=(Participant&);
+    friend std::ostream &operator<<(std::ostream&, const MainControl&);
 };
+
 
 // -----------------------------------------------------------
 
 #endif
-0
