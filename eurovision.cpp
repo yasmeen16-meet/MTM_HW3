@@ -75,7 +75,7 @@ MainControl::MainControl(int max_time, int max_participants, int max_votes):
 
 MainControl::~MainControl() {
     for (int i = 0; i < this->max_participants; i++) {
-        delete this->control_participants[i];
+        this->control_participants[i]=NULL;
     }
     delete[] this->control_participants;
 }
@@ -92,15 +92,17 @@ string getPhase(int phase){
 //*******************************
 
 std::ostream& operator<<(std::ostream& os, const MainControl& main_control) {
-    os << "{"  << endl << getPhase(main_control.phase)<<endl;
-    for (int i=0; i< main_control.max_participants; i++)
-    {
-        if(main_control.control_participants[i]!=NULL)
-        {
-            os << *(main_control.control_participants[i])<<endl;
+    os << "{" << endl << getPhase(main_control.phase) << endl;
+    if (main_control.phase == 0) {
+        for (int i = 0; i < main_control.max_participants; i++) {
+            if (main_control.control_participants[i] != NULL) {
+                os << *(main_control.control_participants[i]) << endl;
+            }
         }
     }
-    os << "}";
+
+    os << "}" << endl;
+
     return os;
 }
 
@@ -136,8 +138,7 @@ MainControl& MainControl::operator+=(Participant& participant) {
                         for (int i = 0; i < this->max_participants; i++) {
                             if (this->control_participants[i] == NULL) {
                                 this->control_participants[i] = &participant;
-                                // this->control_participants[i] = &participant;
-                                //(participant).updateRegistered(true);
+                                (participant).updateRegistered(true);
                                 return *this;
                             }
                         }
@@ -147,4 +148,46 @@ MainControl& MainControl::operator+=(Participant& participant) {
         }
     }
     return *this;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+MainControl& MainControl::operator-=(Participant &participant) {
+    if (this->phase == Registration) {
+        if (participant.isRegistered() == 1) {
+            if ((this->stateExists(*this, participant.state()))) {
+                for (int i = 0; i < max_participants; i++) {
+                    if (this->control_participants[i] != NULL) {
+                        if (this->control_participants[i]->state() == participant.state()) {
+                            participant.updateRegistered(false);
+                            this->control_participants[i] = NULL;
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+    return *this;
+}
+
+void MainControl::setPhase(int new_phase) {
+    if (this->phase - new_phase==-1){
+        phase++;
+    }
+}
+
+
+bool MainControl::legalParticipant(Participant &participant) const {
+    if (participant.state()!=""&& participant.song()!=""&&participant.singer()!=""&&participant.timeLength()<=max_time){
+        return true;
+    }
+    return false;
+}
+
+bool MainControl::participate(const string str)  {
+    if (this->stateExists(*this,str)){
+        return true;
+    }
+    return false;
 }
