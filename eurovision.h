@@ -110,7 +110,13 @@ public :
     MainControl(int max_time = 180, int max_participants = 26, int max_votes = 5);
     ~MainControl();
     MainControl& operator+=(Participant&);
+    /////////////////////////////////////
+    MainControl& operator-=(Participant&);
+    void setPhase (int new_phase);
+    bool legalParticipant(Participant& participant)const ;
+    bool participate (const  string) ;
     friend std::ostream &operator<<(std::ostream&, const MainControl&);
+
 };
 
 
