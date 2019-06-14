@@ -104,6 +104,11 @@ struct Vote
 class MainControl {
     int max_time, max_participants, max_votes, phase;
     Participant **control_participants;
+
+    ///Yasmeen///
+    int* regular_votes, *judge_votes;
+    ////////////
+
     //votes
 // relevant private members can be defined here, if necessary.
 
@@ -113,9 +118,7 @@ private:
     ///
     Participant** sortParticipants();
     void sortHelp(Participant**, int);
-    //int bubble(Participant**, int);
 
-    ///
 
 public :
 
