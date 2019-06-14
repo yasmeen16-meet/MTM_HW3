@@ -126,7 +126,7 @@ bool MainControl::stateExists(const MainControl& main_control, string state) {
     return false;
 }
 
-/////////**************///////////
+
 MainControl& MainControl::operator+=(Participant& participant) {
     if (this->phase == Registration) {
         if (this->getSize() != this->max_participants) {
@@ -165,11 +165,6 @@ MainControl& MainControl::operator+=(Participant& participant) {
     return *this;
 }
 
-/////////**************///////////
-
-
-///////////Yasmeen////////////
-
 int bubble(Participant** arr, int n) {
     int i, swapped = 0;
     for(i = 1; i < n; i++) {
@@ -206,9 +201,7 @@ Participant** MainControl::sortParticipants() {
 }
 
 
-////////////Yasmeen/////////
 
-/////////**************///////////
 MainControl& MainControl::operator-=(Participant &participant) {
     if (this->phase == Registration) {
         if (participant.isRegistered() == 1) {
@@ -241,7 +234,7 @@ MainControl& MainControl::operator-=(Participant &participant) {
     }
     return *this;
 }
-/////////**************///////////
+
 
 void MainControl::setPhase(int new_phase) {
     if (this->phase - new_phase==-1){
@@ -300,4 +293,14 @@ std::ostream& operator<<(std::ostream& os, const Voter& voter){
 Voter& Voter::operator++() {
     this->counter++;
     return *this;
+}
+
+
+Vote::Vote(Voter voter, string state) {
+    this->voter=&voter;
+    this->state = state;
+}
+
+Vote::~Vote() {
+    this->voter = NULL;
 }
