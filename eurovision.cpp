@@ -61,8 +61,8 @@ void Participant::updateRegistered(bool new_status) {
 }
 
 MainControl::MainControl(int max_time, int max_participants, int max_votes):
-    control_participants(new Participant*[max_participants]), regular_votes(new int[max_participants]),
-            judge_votes(new int[max_participants]) {
+        control_participants(new Participant*[max_participants]),
+        regular_votes( new int [max_participants]),judge_votes(new int [max_participants]){
 
     this->max_time = max_time;
     this->max_participants = max_participants;
@@ -74,10 +74,10 @@ MainControl::MainControl(int max_time, int max_participants, int max_votes):
     }
 
     for (int i = 0; i < max_participants; i++) {
-        this->regular_votes = 0;
+        this->regular_votes[i] = 0;
     }
     for (int i = 0; i < max_participants; i++) {
-        this->judge_votes = 0;
+        this->judge_votes[i] = 0;
     }
 }
 
@@ -86,6 +86,8 @@ MainControl::~MainControl() {
         this->control_participants[i] = NULL;
     }
     delete[] this->control_participants;
+    delete [] this->regular_votes;
+    delete[] this->judge_votes;
 }
 
 string getPhase(int phase){
@@ -97,7 +99,7 @@ string getPhase(int phase){
     }
     return "Voting";
 }
-/////////**************///////////
+
 std::ostream& operator<<(std::ostream& os, MainControl& main_control) {
     os << "{" << endl << getPhase(main_control.phase) << endl;
     if (main_control.phase == Registration) {
@@ -108,10 +110,18 @@ std::ostream& operator<<(std::ostream& os, MainControl& main_control) {
         }
     }
 
+    else if (main_control.phase == Voting){
+        for (int i=0; i< main_control.max_participants; i++){
+            if (main_control.control_participants[i] != NULL){
+                os << main_control.control_participants[i]->state() + " : Regular(" << main_control.regular_votes[i]
+                   << ") Judge(" << main_control.judge_votes[i]<< ")" << endl;
+            }
+        }
+    }
     os << "}" << endl;
     return os;
 }
-/////////**************///////////
+
 
 int MainControl::getSize() const {
     int size = 0;
