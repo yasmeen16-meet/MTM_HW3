@@ -257,9 +257,47 @@ bool MainControl::legalParticipant(Participant &participant) const {
     return false;
 }
 
-bool MainControl::participate(const string str)  {
-    if (this->stateExists(*this,str)){
+bool MainControl::participate(const string str) {
+    if (this->stateExists(*this, str)) {
         return true;
     }
     return false;
+}
+
+Voter::Voter(string state, int type ) {
+    this->state_name=state;
+    this->type=type;
+    this->counter=0;
+}
+
+string Voter::state() const {
+    return state_name;
+}
+
+int Voter::voterType() const {
+    return type;
+}
+
+int Voter::timesOfVotes() const {
+    return counter;
+}
+
+string getVoterType(const Voter& voter){
+    if (voter.voterType()==0){
+        return "ALL";
+    }
+    if (voter.voterType()==1){
+        return "Regular";
+    }
+    return "Judge";
+}
+
+std::ostream& operator<<(std::ostream& os, const Voter& voter){
+    os << "<" +voter.state() + "/" + getVoterType(voter) +">" ;
+    return os;
+}
+
+Voter& Voter::operator++() {
+    this->counter++;
+    return *this;
 }
