@@ -63,16 +63,22 @@ std::ostream& operator<<(std::ostream& , const Participant&);
 class Voter
 {
 // relevant private members can be defined here, if necessary.
+    int type , counter;
+    string state_name;
+
 
 public :
-
 // need to define here possibly c'tr and d'tr and ONLY methods that
 // are mentioned and demonstrated in the test example that has been published.
-// NO OTHER METHODS SHOULD APPEAR HERE.
-
 // NO friend is allowed here.
+    Voter (string, int type =Regular);
+    string state()const ;
+    int voterType()const ;
+    int timesOfVotes()const ;
+    Voter& operator++( );
 
 };
+std::ostream& operator<<(std::ostream& , const Voter&);
 
 
 // -----------------------------------------------------------
