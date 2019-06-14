@@ -61,7 +61,7 @@ void Participant::updateRegistered(bool new_status) {
 }
 
 MainControl::MainControl(int max_time, int max_participants, int max_votes):
-        control_participants(new Participant*[max_participants]) {
+    control_participants(new Participant*[max_participants]) {
 
     this->max_time = max_time;
     this->max_participants = max_participants;
@@ -75,7 +75,7 @@ MainControl::MainControl(int max_time, int max_participants, int max_votes):
 
 MainControl::~MainControl() {
     for (int i = 0; i < this->max_participants; i++) {
-        this->control_participants[i]=NULL;
+        this->control_participants[i] = NULL;
     }
     delete[] this->control_participants;
 }
@@ -89,11 +89,10 @@ string getPhase(int phase){
     }
     return "Voting";
 }
-//*******************************
-
-std::ostream& operator<<(std::ostream& os, const MainControl& main_control) {
+/////////**************///////////
+std::ostream& operator<<(std::ostream& os, MainControl& main_control) {
     os << "{" << endl << getPhase(main_control.phase) << endl;
-    if (main_control.phase == 0) {
+    if (main_control.phase == Registration) {
         for (int i = 0; i < main_control.max_participants; i++) {
             if (main_control.control_participants[i] != NULL) {
                 os << *(main_control.control_participants[i]) << endl;
@@ -102,14 +101,14 @@ std::ostream& operator<<(std::ostream& os, const MainControl& main_control) {
     }
 
     os << "}" << endl;
-
     return os;
 }
+/////////**************///////////
 
-int MainControl::getSize(const MainControl& main_control) {
+int MainControl::getSize() const {
     int size = 0;
-    for (int i = 0; i < main_control.max_participants; i++) {
-        if (main_control.control_participants[i] != NULL) {
+    for (int i = 0; i < this->max_participants; i++) {
+        if (this->control_participants[i] != NULL) {
             size++;
         }
     }
@@ -127,22 +126,38 @@ bool MainControl::stateExists(const MainControl& main_control, string state) {
     return false;
 }
 
+/////////**************///////////
 MainControl& MainControl::operator+=(Participant& participant) {
     if (this->phase == Registration) {
-
-        if (getSize(*this) != this->max_participants) {
+        if (this->getSize() != this->max_participants) {
             if (participant.isRegistered() == 0) {
                 if (participant.state() != "" && participant.song() != "" && participant.singer() != "" &&
                     participant.timeLength() <= this->max_time) {
+
                     if (!(this->stateExists(*this, participant.state()))) {
+                      //  cout<< "My test:" << *this <<endl;
                         for (int i = 0; i < this->max_participants; i++) {
                             if (this->control_participants[i] == NULL) {
                                 this->control_participants[i] = &participant;
                                 (participant).updateRegistered(true);
+
+                                int size = this->getSize();
+                                Participant ** arr = this->sortParticipants();
+                                int j;
+                                for (j=0; j<size; j++){
+                                    this->control_participants[j] = arr[j];
+                                    arr[j] = NULL;
+                                }
+                                for (int k=j; k<this->max_participants; k++){
+                                    this->control_participants[k] = NULL;
+                                }
+                                delete [] arr;
                                 return *this;
                             }
                         }
+
                     }
+
                 }
             }
         }
@@ -150,17 +165,73 @@ MainControl& MainControl::operator+=(Participant& participant) {
     return *this;
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////**************///////////
 
+
+///////////Yasmeen////////////
+
+int bubble(Participant** arr, int n) {
+    int i, swapped = 0;
+    for(i = 1; i < n; i++) {
+        if (arr[i - 1]->state().compare(arr[i]->state()) > 0) {
+            swapped = 1;
+            swap(arr[i-1], arr[i]);
+        }
+    }
+    return swapped;
+}
+
+void MainControl::sortHelp(Participant** arr, int n) {
+    int not_sorted = 1;
+    while( (n > 1) && not_sorted )
+        not_sorted = bubble(arr, n--);
+}
+
+Participant** MainControl::sortParticipants() {
+    int size = this->getSize();
+    Participant** arr=NULL;
+    if (size != 0){
+        arr = new Participant*[size];
+        int j=0;
+        //building a new arr of pointers to the participants
+        for (int i=0; i < this->max_participants; i++){
+            if (this->control_participants[i]!=NULL){
+                arr[j] = this->control_participants[i];
+                j++;
+            }
+        }
+        sortHelp(arr,size);
+    }
+    return arr;
+}
+
+
+////////////Yasmeen/////////
+
+/////////**************///////////
 MainControl& MainControl::operator-=(Participant &participant) {
     if (this->phase == Registration) {
         if (participant.isRegistered() == 1) {
             if ((this->stateExists(*this, participant.state()))) {
+
                 for (int i = 0; i < max_participants; i++) {
                     if (this->control_participants[i] != NULL) {
                         if (this->control_participants[i]->state() == participant.state()) {
                             participant.updateRegistered(false);
                             this->control_participants[i] = NULL;
+
+                            int size = this->getSize();
+                            Participant ** arr = this->sortParticipants();
+                            int j;
+                            for (j=0; j<size; j++){
+                                this->control_participants[j] = arr[j];
+                                arr[j] = NULL;
+                            }
+                            for (int k=j; k<this->max_participants; k++){
+                                this->control_participants[k] = NULL;
+                            }
+                            delete [] arr;
+                            return *this;
                         }
                     }
                 }
@@ -170,6 +241,7 @@ MainControl& MainControl::operator-=(Participant &participant) {
     }
     return *this;
 }
+/////////**************///////////
 
 void MainControl::setPhase(int new_phase) {
     if (this->phase - new_phase==-1){
