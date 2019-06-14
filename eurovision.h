@@ -86,6 +86,12 @@ std::ostream& operator<<(std::ostream& , const Voter&);
 struct Vote
 {
 
+    Voter* voter;
+    string state;
+
+    Vote(Voter, string);
+    ~Vote();
+
 // ALL is public here.
 // need to define ONLY data members and c'tr and d'tr.
 // NO NEED to define anything else.
