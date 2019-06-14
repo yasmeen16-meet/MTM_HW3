@@ -61,15 +61,23 @@ void Participant::updateRegistered(bool new_status) {
 }
 
 MainControl::MainControl(int max_time, int max_participants, int max_votes):
-    control_participants(new Participant*[max_participants]) {
+    control_participants(new Participant*[max_participants]), regular_votes(new int[max_participants]),
+            judge_votes(new int[max_participants]) {
 
     this->max_time = max_time;
     this->max_participants = max_participants;
     this->max_votes = max_votes;
     phase = Registration;
 
-    for (int i=0; i<max_participants; i++){
+    for (int i = 0; i < max_participants; i++) {
         this->control_participants[i] = NULL;
+    }
+
+    for (int i = 0; i < max_participants; i++) {
+        this->regular_votes = 0;
+    }
+    for (int i = 0; i < max_participants; i++) {
+        this->judge_votes = 0;
     }
 }
 
