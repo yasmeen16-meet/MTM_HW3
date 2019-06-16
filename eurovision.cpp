@@ -85,13 +85,13 @@ MainControl::~MainControl() {
         this->control_participants[i] = NULL;
     }
     delete[] this->control_participants;
-    delete [] this->regular_votes;
+    delete[] this->regular_votes;
     delete[] this->judge_votes;
 }
 
 string getPhase(int phase){
     if (phase == 0){
-        return "Registeration";
+        return "Registration";
     }
     if (phase == 1){
         return "Contest";
@@ -339,13 +339,13 @@ MainControl& MainControl::operator +=(Vote vote) {
             }
         } else {
             if (vote.voter->timesOfVotes() == 0) {
+                ++*vote.voter;
                 for (int i = 0; i < 10; i++) {
                     if (vote.voter->state() != vote.state[i]) {
                         if (participate(vote.state[i])) {
                             int score = rankToScore(i);
                             int  index = getIndex(vote.state[i]);
                             this->judge_votes[index]+=score;
-                            ++*vote.voter;
                         }
                     }
                 }
@@ -380,6 +380,7 @@ Vote::Vote(Voter& new_voter, string state1, string state2, string state3, string
 }
 Vote::~Vote() {
     this->voter = NULL;
+    delete [] this->state;
 }
 
 string getVoterType(const Voter& voter){
