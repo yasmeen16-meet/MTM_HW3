@@ -85,8 +85,8 @@ MainControl::~MainControl() {
         this->control_participants[i] = NULL;
     }
     delete[] this->control_participants;
-    delete[] this->regular_votes;
-    delete[] this->judge_votes;
+ //   delete[] this->regular_votes;
+  //  delete[] this->judge_votes;
 }
 
 string getPhase(int phase){
@@ -380,7 +380,7 @@ Vote::Vote(Voter& new_voter, string state1, string state2, string state3, string
 }
 Vote::~Vote() {
     this->voter = NULL;
-    delete [] this->state;
+ //   delete [] this->state;
 }
 
 string getVoterType(const Voter& voter){
