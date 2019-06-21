@@ -85,8 +85,8 @@ MainControl::~MainControl() {
         this->control_participants[i] = NULL;
     }
     delete[] this->control_participants;
- //   delete[] this->regular_votes;
-  //  delete[] this->judge_votes;
+    delete[] this->regular_votes;
+    delete[] this->judge_votes;
 }
 
 string getPhase(int phase){
@@ -332,8 +332,10 @@ MainControl& MainControl::operator +=(Vote vote) {
                     if (vote.voter->timesOfVotes() < max_votes) {
                         ++*vote.voter;
                         //cout<< "counter" << vote.voter->timesOfVotes()<<endl;
-                        int index = getIndex(vote.state[0]);
-                        this->regular_votes[index]++;
+                       int index = getIndex(vote.state[0]);
+                       if(index!=-1){
+                           this->regular_votes[index]++;
+                       }
                     }
                 }
             }
@@ -352,6 +354,8 @@ MainControl& MainControl::operator +=(Vote vote) {
             }
         }
     }
+
+    delete [] vote.state;
     return *this;
 }
 Vote::Vote(Voter& new_voter, string state1, string state2, string state3, string state4, string state5 , string state6,
@@ -379,8 +383,8 @@ Vote::Vote(Voter& new_voter, string state1, string state2, string state3, string
 
 }
 Vote::~Vote() {
-    this->voter = NULL;
- //   delete [] this->state;
+    //this->voter = NULL;
+    //delete [] this->state;
 }
 
 string getVoterType(const Voter& voter){
