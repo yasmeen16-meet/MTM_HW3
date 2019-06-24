@@ -18,6 +18,7 @@ private:
     int song_length;
     string singer_name;
     int is_registerd;
+    
 
 public :
     Participant(string state, string song, int length, string singer);
@@ -76,8 +77,8 @@ struct Vote
 
 class MainControl {
     int max_time, max_participants, max_votes, phase;
-    Participant **control_participants;
     int* regular_votes, *judge_votes;
+    Participant **control_participants;
 
 
 private:
@@ -87,6 +88,7 @@ private:
     Participant** sortParticipants();
     void sortHelp(Participant**, int);
     int getIndex(string);
+    MainControl& operator =(const MainControl&)= default;
 
 public :
     MainControl(int max_time = 180, int max_participants = 26, int max_votes = 5);
@@ -99,6 +101,29 @@ public :
     bool participate (const  string) ;
     friend std::ostream &operator<<(std::ostream&, const MainControl&);
     MainControl& operator+=(Vote );
+
+    ///////part2/////
+    MainControl(const MainControl& main_control);
+    class Iterator;
+    Iterator begin() const;
+    Iterator end() const;
+
+};
+
+class MainControl::Iterator {
+    const MainControl* main_control;
+    int index;
+    Iterator (const MainControl* main_control, int index);
+    friend class MainControl;
+public:
+    Iterator();
+    const Participant& operator*()const;
+    Iterator& operator++();
+    bool operator<(const Iterator& it) const;
+    bool operator==(const Iterator& it) const;
+    Iterator(const Iterator&) = default;
+    Iterator& operator=(const Iterator&)= default ;
+    Iterator& operator--() = delete;
 };
 
 
