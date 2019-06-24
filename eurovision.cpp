@@ -1,7 +1,7 @@
 //
 // Created by w10 on 6/12/2019.
 //
-
+#include "assert.h"
 #include "eurovision.h"
 
 Participant::Participant(string state,string song,int length,string singer) {
@@ -80,6 +80,7 @@ MainControl::MainControl(int max_time, int max_participants, int max_votes):
         this->judge_votes[i] = 0;
     }
 }
+
 MainControl::~MainControl() {
     for (int i = 0; i < this->max_participants; i++) {
         this->control_participants[i] = NULL;
@@ -98,7 +99,7 @@ string getPhase(int phase){
     }
     return "Voting";
 }
-/////////**************///////////
+
 std::ostream& operator<<(std::ostream& os, MainControl& main_control) {
     os << "{" << endl << getPhase(main_control.phase) << endl;
     if (main_control.phase == Registration) {
@@ -142,7 +143,6 @@ bool MainControl::stateExists(const MainControl& main_control, string state) {
     return false;
 }
 
-/////////**************///////////
 MainControl& MainControl::operator+=(Participant& participant) {
     if (this->phase == Registration) {
         if (this->getSize() != this->max_participants) {
@@ -181,11 +181,6 @@ MainControl& MainControl::operator+=(Participant& participant) {
     return *this;
 }
 
-/////////**************///////////
-
-
-///////////Yasmeen////////////
-
 int bubble(Participant** arr, int n) {
     int i, swapped = 0;
     for(i = 1; i < n; i++) {
@@ -221,10 +216,6 @@ Participant** MainControl::sortParticipants() {
     return arr;
 }
 
-
-////////////Yasmeen/////////
-
-/////////**************///////////
 MainControl& MainControl::operator-=(Participant &participant) {
     if (this->phase == Registration) {
         if (participant.isRegistered() == 1) {
@@ -257,14 +248,12 @@ MainControl& MainControl::operator-=(Participant &participant) {
     }
     return *this;
 }
-/////////**************///////////
 
 void MainControl::setPhase(int new_phase) {
     if (this->phase - new_phase==-1){
         phase++;
     }
 }
-
 
 bool MainControl::legalParticipant(Participant &participant) const {
     if (participant.state()!=""&& participant.song()!=""&&participant.singer()!=""&&participant.timeLength()<=max_time){
@@ -331,7 +320,6 @@ MainControl& MainControl::operator +=(Vote vote) {
 
                     if (vote.voter->timesOfVotes() < max_votes) {
                         ++*vote.voter;
-                        //cout<< "counter" << vote.voter->timesOfVotes()<<endl;
                        int index = getIndex(vote.state[0]);
                        if(index!=-1){
                            this->regular_votes[index]++;
@@ -347,7 +335,9 @@ MainControl& MainControl::operator +=(Vote vote) {
                         if (participate(vote.state[i])) {
                             int score = rankToScore(i);
                             int  index = getIndex(vote.state[i]);
-                            this->judge_votes[index]+=score;
+                            if (index!=-1) {
+                                this->judge_votes[index] += score;
+                            }
                         }
                     }
                 }
@@ -358,6 +348,7 @@ MainControl& MainControl::operator +=(Vote vote) {
     delete [] vote.state;
     return *this;
 }
+
 Vote::Vote(Voter& new_voter, string state1, string state2, string state3, string state4, string state5 , string state6,
         string state7, string state8, string state9, string state10):
          state(new string[10]){
@@ -382,9 +373,9 @@ Vote::Vote(Voter& new_voter, string state1, string state2, string state3, string
     }
 
 }
+
 Vote::~Vote() {
-    //this->voter = NULL;
-    //delete [] this->state;
+
 }
 
 string getVoterType(const Voter& voter){
@@ -402,7 +393,6 @@ std::ostream& operator<<(std::ostream& os, const Voter& voter){
     return os;
 }
 
-
 Voter& Voter::operator++() {
     this->counter++;
     return *this;
@@ -417,4 +407,47 @@ int MainControl::getIndex(string state) {
         }
     }
     return  -1;
+}
+
+//////////////////////part 2////
+ MainControl::Iterator::Iterator(const MainControl* main_control, int index):
+ main_control(main_control), index(index) {
+
+}
+const Participant& MainControl::Iterator::operator*() const {
+    //assert(index >= 0 && index < main_control->getSize());
+    return *(this->main_control->control_participants[index]);
+}
+
+MainControl::Iterator& MainControl::Iterator::operator++() {
+    ++index;
+    return *this;
+///return *(Iterator (this.main_control, ++index));
+}
+
+bool MainControl::Iterator::operator < (const Iterator& it) const {
+    if(index >= 0 && index < main_control->getSize()) {
+        return index < it.index;
+    }
+    return false;
+}
+
+bool MainControl::Iterator::operator==(const Iterator& it) const {
+    if(this->main_control == it.main_control) {
+        return index == it.index;
+    }
+    return false;
+}
+
+MainControl::Iterator MainControl::begin() const {
+    return Iterator(this, 0);
+}
+
+MainControl::Iterator MainControl::end() const {
+    return Iterator(this, this->getSize());
+}
+
+MainControl::Iterator::Iterator() :
+        index(0){
+    main_control=NULL;
 }
