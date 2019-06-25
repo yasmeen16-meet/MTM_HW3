@@ -77,8 +77,8 @@ struct Vote
 
 class MainControl {
     int max_time, max_participants, max_votes, phase;
-    int* regular_votes, *judge_votes;
     Participant **control_participants;
+    int* regular_votes, *judge_votes;
 
 
 private:
@@ -107,8 +107,10 @@ public :
     class Iterator;
     Iterator begin() const;
     Iterator end() const;
+    string operator()(int i, int voter_type) const;
 
-};
+
+    };
 
 class MainControl::Iterator {
     const MainControl* main_control;
