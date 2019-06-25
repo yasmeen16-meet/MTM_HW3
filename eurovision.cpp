@@ -3,6 +3,7 @@
 //
 #include "assert.h"
 #include "eurovision.h"
+#include <vector>
 
 Participant::Participant(string state,string song,int length,string singer) {
     this->state_name = state;
@@ -399,17 +400,18 @@ Voter& Voter::operator++() {
 }
 
 int MainControl::getIndex(string state) {
-    for(int i=0 ; i< max_participants ; i++){
+    for(int i=0 ; i< max_participants ; i++)
         if (control_participants[i]!=NULL){
             if (control_participants[i]->state()==state){
                 return i;
             }
         }
-    }
     return  -1;
 }
 
+
 //////////////////////part 2////
+
  MainControl::Iterator::Iterator(const MainControl* main_control, int index):
  main_control(main_control), index(index) {
 
@@ -450,4 +452,131 @@ MainControl::Iterator MainControl::end() const {
 MainControl::Iterator::Iterator() :
         index(0){
     main_control=NULL;
+}
+
+
+class nextIsBigger {
+public:
+    bool operator()(int num1, int num2) const {
+        return num1 < num2;
+    }
+};
+
+
+
+template<typename Iterator, typename Predicate>
+Iterator get (Iterator first , Iterator last , Predicate pred , int i) {
+    int size = 0;
+    Iterator current = first;
+
+    while (!(current == last)) {
+        size++;
+        ++current;
+    }
+    if (i < 1 || i > size) {
+        return last;
+    }
+    int *arr = new int[size];
+    int index = 0;
+    for (Iterator it1 = first; !(it1 == last); ++it1) {
+        int counter = 0;
+        for (Iterator it2 = first; !(it2 == last); ++it2) {
+            if (!(it1==it2) && pred(*it1, *it2)){
+                counter++;
+            }
+        }
+
+        arr[index] = counter;
+        index++;
+    }
+
+    int index_result=0;
+    for (int k = 0; k < size; k++) {
+        if (arr[k] == i - 1) {
+            index_result = k;
+            break;
+        }
+    }
+
+    delete [] arr;
+
+    Iterator result = first;
+    while (index_result > 0) {
+        ++result;
+        index_result--;
+    }
+    return result;
+}
+
+int numEqualBefore(int * arr, int index){
+    if (index == 0){
+        return 0;
+    }
+    int count =0;
+    for (int i = 0; i<= index; i++){
+        if (arr[i] >= arr[index]){
+            count ++;
+        }
+    }
+    return count;
+}
+
+int getIndexOfMax(int * arr , int size){
+    int index = -1, max = -1;
+    for (int i=size-1; i>=0; i--){
+        if(arr[i] > max){
+            max = arr[i];
+            index = i;
+        }
+    }
+    return index;
+}
+
+
+string MainControl::operator()(int i, int voter_type) const {
+    int size = this->getSize();
+    if (i < 1 || i > size) {
+        return"";
+    }
+
+    nextIsBigger pred;
+    vector<int> vec(size, 0);
+    int* copy_arr = new int[size];
+    string result = "";
+
+
+    if (voter_type == Regular) {
+        for (int k = 0; k < size; ++k) {
+            copy_arr[k] = this->regular_votes[k];
+        }
+    }else if(voter_type == Judge){
+        for (int k = 0; k < size; ++k) {
+            copy_arr[k] = this->judge_votes[k];
+        }
+    }else{
+        for (int k = 0; k < size; ++k) {
+            copy_arr[k] = this->regular_votes[k] + this->judge_votes[k];
+        }
+    }
+
+    int value = size;
+    int index = getIndexOfMax(copy_arr, size);
+    while (index != -1){
+        copy_arr[index] = -1;
+        vec[index] = value;
+        value --;
+        index = getIndexOfMax(copy_arr, size);
+    }
+
+    vector<int>::iterator result_get = get(vec.begin(), vec.end(), pred,i);
+    int place = 0;
+    vector<int>::iterator iterator_help = vec.begin();
+    while (iterator_help != result_get){
+        place++;
+        ++iterator_help;
+    }
+
+    result = this->control_participants[place]->state();
+    delete[] copy_arr;
+    return result;
 }
