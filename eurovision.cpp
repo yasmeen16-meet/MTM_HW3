@@ -96,6 +96,7 @@ MainControl::MainControl(int max_time, int max_participants, int max_votes):
 ///MainControl Destructor
 MainControl::~MainControl() {
     for (int i = 0; i < this->max_participants; i++) {
+        this->control_participants[i]->updateRegistered(false);
         this->control_participants[i] = NULL;
     }
     delete[] this->control_participants;
