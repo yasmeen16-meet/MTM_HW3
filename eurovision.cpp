@@ -561,13 +561,6 @@ int getIndexOfMax(int * arr , int size) {
     return index;
 }
 
-///fills the array with the right votes
-void fillVotes(int* arr, int* votes_array, int size) {
-    for (int k = 0; k < size; ++k) {
-        arr[k] = votes_array[k];
-    }
-}
-
 ///overloading the operator ()
 ///returns the state's name at the i rank by votes
 string MainControl::operator()(int i, int voter_type) const {
@@ -580,11 +573,17 @@ string MainControl::operator()(int i, int voter_type) const {
     int *copy_arr = new int[size];
     string result = "";
     if (voter_type == Regular) {
-        fillVotes(copy_arr, this->regular_votes, size);
+        for (int k = 0; k < size; ++k) {
+            copy_arr = this->regular_votes[k];
+        }
     } else if (voter_type == Judge) {
-        fillVotes(copy_arr, this->regular_votes, size);
+        for (int k = 0; k < size; ++k) {
+            copy_arr = this->judge_votes[k];
+        }
     } else {
-        fillVotes(copy_arr, this->regular_votes, size);
+        for (int k = 0; k < size; ++k) {
+            copy_arr = this->regular_votes[k] + this->judge_votes[k];
+        }
     }
     int value = size;
     int index = getIndexOfMax(copy_arr, size);
