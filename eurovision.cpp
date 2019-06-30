@@ -16,7 +16,6 @@ Participant::Participant(string state,string song,int length,string singer) {
 
 ///Participant Destructor- Empty
 Participant::~Participant() {
-
 }
 
 ///returns the state's name of the "this" participant
@@ -84,7 +83,6 @@ MainControl::MainControl(int max_time, int max_participants, int max_votes):
     for (int i = 0; i < max_participants; i++) {
         this->control_participants[i] = NULL;
     }
-
     for (int i = 0; i < max_participants; i++) {
         this->regular_votes[i] = 0;
     }
@@ -167,14 +165,12 @@ MainControl& MainControl::operator+=(Participant& participant) {
             if (participant.isRegistered() == 0) {
                 if (participant.state() != "" && participant.song() != "" && participant.singer() != "" &&
                     participant.timeLength() <= this->max_time) {
-
                     if (!(this->stateExists(*this, participant.state()))) {
                         //  cout<< "My test:" << *this <<endl;
                         for (int i = 0; i < this->max_participants; i++) {
                             if (this->control_participants[i] == NULL) {
                                 this->control_participants[i] = &participant;
                                 (participant).updateRegistered(true);
-
                                 int size = this->getSize();
                                 Participant **arr = this->sortParticipants();
                                 int j;
@@ -191,7 +187,6 @@ MainControl& MainControl::operator+=(Participant& participant) {
                         }
 
                     }
-
                 }
             }
         }
@@ -243,13 +238,11 @@ MainControl& MainControl::operator-=(Participant &participant) {
     if (this->phase == Registration) {
         if (participant.isRegistered() == 1) {
             if ((this->stateExists(*this, participant.state()))) {
-
                 for (int i = 0; i < max_participants; i++) {
                     if (this->control_participants[i] != NULL) {
                         if (this->control_participants[i]->state() == participant.state()) {
                             participant.updateRegistered(false);
                             this->control_participants[i] = NULL;
-
                             int size = this->getSize();
                             Participant **arr = this->sortParticipants();
                             int j;
@@ -266,7 +259,6 @@ MainControl& MainControl::operator-=(Participant &participant) {
                     }
                 }
             }
-
         }
     }
     return *this;
@@ -350,7 +342,6 @@ MainControl& MainControl::operator +=(Vote vote) {
         if (vote.voter->voterType() == Regular) {
             if (vote.voter->state() != vote.state[0]) {
                 if (participate(vote.voter->state())) {
-
                     if (vote.voter->timesOfVotes() < max_votes) {
                         ++*vote.voter;
                         int index = getIndex(vote.state[0]);
@@ -383,8 +374,8 @@ MainControl& MainControl::operator +=(Vote vote) {
 
 ///creates a new vote
 Vote::Vote(Voter& new_voter, string state1, string state2, string state3, string state4, string state5 , string state6,
-        string state7, string state8, string state9, string state10):
-         state(new string[10]) {
+           string state7, string state8, string state9, string state10):
+        state(new string[10]) {
     for (int i = 0; i < 10; i++) {
         state[i] = "";
     }
@@ -408,7 +399,6 @@ Vote::Vote(Voter& new_voter, string state1, string state2, string state3, string
 
 ///Voter Destructor - Empty
 Vote::~Vote() {
-
 }
 
 ///returns the voter type of the recieved voter
@@ -447,10 +437,10 @@ int MainControl::getIndex(string state) {
 
 
 //////////////////////part 2////
-/// MainControl::Iterator Constructor
- MainControl::Iterator::Iterator(const MainControl* main_control, int index):
- main_control(main_control), index(index) {
 
+/// MainControl::Iterator Constructor
+MainControl::Iterator::Iterator(const MainControl* main_control, int index):
+        main_control(main_control), index(index) {
 }
 
 ///returns the participant object at which "this" iterator is pointing
@@ -509,6 +499,7 @@ public:
     }
 };
 
+
 ///generic get function: returns the object at the i rank from a container
 template<typename Iterator, typename Predicate>
 Iterator get (Iterator first , Iterator last , Predicate pred , int i) {
@@ -550,6 +541,21 @@ Iterator get (Iterator first , Iterator last , Predicate pred , int i) {
 }
 
 ///returns the maxinmum number from an int array
+int numEqualBefore(int * arr, int index) {
+    if (index == 0) {
+        return 0;
+    }
+    int count = 0;
+    for (int i = 0; i <= index; i++) {
+        if (arr[i] >= arr[index]) {
+            count++;
+        }
+    }
+    return count;
+}
+
+///overloading the operator ()
+///returns the state's name at the i rank by votes
 int getIndexOfMax(int * arr , int size) {
     int index = -1, max = -1;
     for (int i = size - 1; i >= 0; i--) {
@@ -561,8 +567,7 @@ int getIndexOfMax(int * arr , int size) {
     return index;
 }
 
-///overloading the operator ()
-///returns the state's name at the i rank by votes
+
 string MainControl::operator()(int i, int voter_type) const {
     int size = this->getSize();
     if (i < 1 || i > size) {
@@ -574,15 +579,15 @@ string MainControl::operator()(int i, int voter_type) const {
     string result = "";
     if (voter_type == Regular) {
         for (int k = 0; k < size; ++k) {
-            copy_arr = this->regular_votes[k];
+            copy_arr[k] = this->regular_votes[k];
         }
     } else if (voter_type == Judge) {
         for (int k = 0; k < size; ++k) {
-            copy_arr = this->judge_votes[k];
+            copy_arr[k] = this->judge_votes[k];
         }
     } else {
         for (int k = 0; k < size; ++k) {
-            copy_arr = this->regular_votes[k] + this->judge_votes[k];
+            copy_arr[k] = this->regular_votes[k] + this->judge_votes[k];
         }
     }
     int value = size;
