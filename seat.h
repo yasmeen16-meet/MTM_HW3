@@ -1,3 +1,5 @@
+#ifndef seat_H
+#define seat_H
 #include <iostream>
 #include <string>
 using std::string;
@@ -13,8 +15,7 @@ public:
 
 // ---------------------------------------------
 
-class Seat
-{
+class Seat{
 protected:
     int line , chair , base_price;
 public:
@@ -119,3 +120,4 @@ public:
 };
 
 // ---------------------------------------------
+#endif
