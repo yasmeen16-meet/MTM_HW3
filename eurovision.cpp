@@ -94,7 +94,9 @@ MainControl::MainControl(int max_time, int max_participants, int max_votes):
 ///MainControl Destructor
 MainControl::~MainControl() {
     for (int i = 0; i < this->max_participants; i++) {
-        this->control_participants[i]->updateRegistered(false);
+        if (this->control_participants[i] != NULL) {
+            this->control_participants[i]->updateRegistered(false);
+        }
         this->control_participants[i] = NULL;
     }
     delete[] this->control_participants;
@@ -374,8 +376,8 @@ MainControl& MainControl::operator +=(Vote vote) {
 
 ///creates a new vote
 Vote::Vote(Voter& new_voter, string state1, string state2, string state3, string state4, string state5 , string state6,
-           string state7, string state8, string state9, string state10):
-        state(new string[10]) {
+        string state7, string state8, string state9, string state10):
+         state(new string[10]) {
     for (int i = 0; i < 10; i++) {
         state[i] = "";
     }
@@ -439,8 +441,8 @@ int MainControl::getIndex(string state) {
 //////////////////////part 2////
 
 /// MainControl::Iterator Constructor
-MainControl::Iterator::Iterator(const MainControl* main_control, int index):
-        main_control(main_control), index(index) {
+ MainControl::Iterator::Iterator(const MainControl* main_control, int index):
+ main_control(main_control), index(index) {
 }
 
 ///returns the participant object at which "this" iterator is pointing
