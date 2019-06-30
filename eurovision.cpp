@@ -355,10 +355,10 @@ MainControl& MainControl::operator +=(Vote vote) {
             }
         } else {
             if (vote.voter->timesOfVotes() == 0) {
-                ++*vote.voter;
                 for (int i = 0; i < 10; i++) {
                     if (vote.voter->state() != vote.state[i]) {
                         if (participate(vote.state[i])) {
+                            ++*vote.voter;
                             int score = rankToScore(i);
                             int index = getIndex(vote.state[i]);
                             if (index != -1) {
@@ -371,7 +371,6 @@ MainControl& MainControl::operator +=(Vote vote) {
         }
     }
     delete[] vote.state;
-    //??delete vote;
     return *this;
 }
 
