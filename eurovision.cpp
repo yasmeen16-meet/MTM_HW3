@@ -371,6 +371,7 @@ MainControl& MainControl::operator +=(Vote vote) {
         }
     }
     delete[] vote.state;
+    //??delete vote;
     return *this;
 }
 
